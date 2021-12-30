@@ -2,97 +2,50 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include "graph.h"
-//char input = NULL;
-//Node graph;
-//ptrNode ptrGraph = &graph;
-int k = 0;
+
+
+
+void freeGraph(ptrNode head);
 void printGraph_cmd(ptrNode head);
-void addEdge(ptrNode head, int *source, int *dest, int *weight);
+void addEdge(ptrNode *head, int source, int dest, int weight);
+void initGraph(ptrNode *head, int size);
 
 int main() {
     printf("START!\n");
-    char input = NULL;
-    Node graph;
-    ptrNode ptrGraph = &graph;
-    ptrGraph = (ptrNode *) malloc(sizeof(ptrNode));
-    while (true)
-    {
-        scanf("%c", &input);
-        switch (input)
-        {
-            case 'A':
-            {
+    char input;
+    int DONE = 0;
+    int amount_of_nodes = 0;
+    ptrNode ptrGraph;
+    while (DONE != EOF) {
+        DONE = scanf("%c", &input);
+        switch (input) {
+            case 'A': {
                 // initiating the Graph nodes.
-                while (input != 'n')
-                {
-                    int amount_of_nodes = 0;
-                    scanf("%c", &input);
-                    if (input > 47 && input < 58)
-                    {
-                        amount_of_nodes = input - '0';
-                        ptrNode arr[amount_of_nodes];
-                        for (int i = 0; i < amount_of_nodes; ++i) {
-                            arr[i] = (ptrNode ) malloc(sizeof(ptrNode));
-                            if (arr[i] == NULL)
-                            {
-                                printf("Memory didn't allocated!\n");
-                                exit(0);
-                            }
-                            arr[i]->node_num = i;
-                            arr[i]->next = NULL;
-                            arr[i]->edges = NULL;
-                            if (i > 0)
-                            {
-                                arr[i - 1]->next = arr[i];
-                            }
-                        }
-                        ptrGraph->next = arr[0];
-//                        printGraph_cmd(ptrGraph);
-                    }
-                }
-                if(input == 'n')
-                {
-                    int src = -1;
-                    int dest = -1;
-                    int weight = -1;
-                    scanf("%c", &input);
-                    while (input != 'A'
-                           && input != 'B' && input != 'D'
-                           && input != 'S' && input != 'T'
-                           && input != 'E' && input != '\n')
-                    {
-                        scanf("%c", &input);
-                        if (input > 47 && input < 58 && src == -1)
-                        {
-                            src = input - '0';
-                        }
-                        else if (input > 47 && input < 58 && dest == -1)
-                        {
-                            dest = input - '0';
-                        }
-                        else if (input > 47 && input < 58 && weight == -1)
-                        {
-                            weight = input - '0';
-                        }
-                        if(src != -1 && dest != -1 && weight != -1)
-                        {
-                            addEdge(ptrGraph, &src, &dest, &weight);
-                            dest = -1;
-                            weight = -1;
-                        }
-                        if(input == 'n')
-                        {
-                            src = -1;
-                            dest = -1;
-                            weight = -1;
-                        }
-                    }
-                }
-                printGraph_cmd(ptrGraph);
+                scanf("%d", &amount_of_nodes);
+                initGraph(&ptrGraph, amount_of_nodes);
+                break;
             }
-            case 'E':
-            {
-                free(ptrGraph);
+            case 'n': {
+                int src = -1;
+                int dest = -1;
+                int weight = -1;
+                int num = -1;
+                scanf("%d", &src);
+                while (scanf("%d", &num)) {
+                    if (src != -1 && dest == -1 && weight == -1) {
+                        dest = num;
+                    } else if (src != -1 && dest != -1 && weight == -1) {
+                        weight = num;
+                    }
+                     if (src != -1 && dest != -1 && weight != -1) {
+                        addEdge(&ptrGraph, src, dest, weight);
+                        dest = -1;
+                        weight = -1;
+                    }
+                }
+                break;
+            }
+            case 'E': {
                 break;
             }
 //            case 'B':
@@ -114,82 +67,124 @@ int main() {
         }
     }
 //    printGraph_cmd(arr);
-    free(ptrGraph);
+    freeGraph(ptrGraph);
     return 0;
 }
 
-void addEdge(ptrNode head, int *source, int *dest, int *weight){
-    ptrNode curr, temp;
+
+void initGraph(ptrNode *head, int size){
+    int amount_of_nodes = size;
+    // initiating the Graph nodes.
+    ptrNode last = NULL;
+    ptrNode node;
+    for (int i = 0; i < amount_of_nodes; ++i) {
+        node = (ptrNode) malloc(sizeof(Node));
+        if (node == NULL) {
+            printf("Memory didn't allocated!\n");
+            exit(0);
+        }
+        node->node_num = i;
+        node->next = NULL;
+        node->edges_s = 0;
+        node->edges = NULL;
+        if (i == 0) {
+            *head = node;
+            last = *head;
+        } else if (i > 0) { // last is not NULL
+            last->next = node;
+            last = node;
+        }
+    }
+}
+
+
+void addEdge(ptrNode *head, int source, int dest, int weight) {
+    ptrNode curr_n, temp;
     ptrNode end = NULL;
 
-    curr = head->next;
-    while(curr != NULL && curr->node_num != *source)
-    {
-        if(curr->node_num == *dest)
-        {
-            end = curr;
+    curr_n = (*head);
+    while (curr_n != NULL && curr_n->node_num != source) {
+        if (curr_n->node_num == dest) {
+            end = curr_n;
         }
-        curr = curr->next;
+        curr_n = curr_n->next;
     }
 
-    temp = head->next;
-    while(end == NULL)
-    {
-        if(temp->node_num == *dest)
-        {
+    temp = (*head);
+    while (end == NULL) {
+        if (temp->node_num == dest) {
             end = temp;
         }
         temp = temp->next;
     }
-    if(curr->edges_s == 0)
-    {
-        ptrEdge e = curr->edges;
-        e = (ptrEdge) malloc(sizeof(ptrEdge));
+    if (curr_n->edges_s == 0) {
+        ptrEdge e;
+        e = (ptrEdge) malloc(sizeof(Edge));
         if (e == NULL) {
             printf("Memory didn't allocated!\n");
             exit(0);
         }
         e->endpoint = end;
-        e->weight = *weight;
+        e->weight = weight;
         e->next = NULL;
-        curr->edges_s++;
-    }
-    else
-    {
-        ptrEdge e = (curr->edges);
-        int size = curr->edges_s + 1;
-        e = (ptrEdge) realloc(e, sizeof(ptrEdge) * size);
-        if (e == NULL) {
+        curr_n->edges_s++;
+        curr_n->edges = e;
+    } else {
+        ptrEdge curr_e = curr_n->edges;
+        while (curr_e->next != NULL) {
+            curr_e = curr_e->next;
+        }
+        ptrEdge newEdge;
+        newEdge = (ptrEdge) malloc(sizeof(Edge));
+        if (newEdge == NULL) {
             printf("Memory didn't allocated!\n");
             exit(0);
         }
-        (e + size -1)->endpoint = end;
-        (e + size -1)->weight = *weight;
-        (e + size -1)->next = NULL;
-        (e + size -2)->next = (e + size -1);
-        curr->edges_s = size;
+        newEdge->endpoint = end;
+        newEdge->weight = weight;
+        newEdge->next = NULL;
+        curr_e->next = newEdge;
+        curr_n->edges_s++;
     }
 }
 
 
-void printGraph_cmd(ptrNode head){
+void printGraph_cmd(ptrNode head) {
     printf("[");
     ptrNode temp;
     temp = head->next;
-    while(temp != NULL)
-    {
+    while (temp != NULL) {
         int id = temp->node_num;
         printf("(ID: %d,\n [", id);
         ptrEdge e = temp->edges;
-        while(e->next != NULL)
-        {
+        while (e->next != NULL) {
             int dest = e->endpoint->node_num;
             int weight = e->weight;
-           printf("E(%d->%d,%d) ",id, dest, weight);
+            printf("E(%d->%d,%d) ", id, dest, weight);
         }
         printf("],\n");
         printf("next -> %d)", temp->next->node_num);
         temp = temp->next;
     }
     printf("]\n");
+}
+
+
+void freeGraph(ptrNode head) {
+    if (head == NULL) {
+        return;
+    }
+    ptrNode curr_n;
+    curr_n = head;
+    while (curr_n != NULL) {
+        ptrNode next_node = curr_n->next;
+        ptrEdge curr_e = curr_n->edges;
+        while (curr_e != NULL) {
+            ptrEdge next_edge = curr_e->next;
+            free(curr_e);
+            curr_e = next_edge;
+        }
+        free(curr_n);
+        curr_n = next_node;
+    }
 }
