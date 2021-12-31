@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "graph.h"
 
+#define BIG_NUM 99999999
 
 
 void freeGraph(ptrNode *head);
@@ -16,6 +17,13 @@ bool contains(ptrNode head, int id);
 void removeEdge(ptrNode *node, int dest);
 void remove_in_edges(ptrNode *head, int id);
 void removeNode(ptrNode *head, int id);
+ptrQueue initQueue(ptrNode head, int src);
+void sortQueue(ptrQueue *head);
+int cmp(const void *a, const void *b);
+ptrQueue deQueue(ptrQueue *head);
+int shortestPath(ptrQueue head, int src ,int dest, int q_size);
+int getShortestDist(ptrQueue head, int id);
+void setShortestDist(ptrQueue *head, int id, int dist);
 
 ptrNode lastNode;
 
@@ -30,6 +38,9 @@ int main() {
         DONE = scanf("%c", &input);
         switch (input) {
             case 'A': {
+                if(ptrGraph != NULL){
+                    freeGraph(&ptrGraph);
+                }
                 // initiating the Graph nodes.
                 scanf("%d", &amount_of_nodes);
                 initGraph(&ptrGraph, amount_of_nodes);
@@ -103,18 +114,22 @@ int main() {
             }
             case 'P':{
                 printGraph_cmd(ptrGraph);
+                break;
             }
-//            case 'S':
-//            {
-//
-//            }
+            case 'S':{
+                int source, dest;
+                scanf("%d", &source);
+                scanf("%d", &dest);
+                ptrQueue queue = initQueue(ptrGraph, source);
+                qsort(&queue, ptrGraph->nodes_s, sizeof(Queue), cmp);
+
+            }
 //            case 'T':
 //            {
 //
 //            }
         }
     }
-//    printGraph_cmd(arr);
     freeGraph(&ptrGraph);
     return 0;
 }
@@ -144,6 +159,7 @@ void initGraph(ptrNode *head, int size){
         }
     }
     lastNode = last;
+    (*head)->nodes_s = amount_of_nodes;
 }
 
 
@@ -211,7 +227,10 @@ void printGraph_cmd(ptrNode head) {
             printf("E(%d->%d,%d) ", id, dest, weight);
             e = e->next;
         }
-        int next_id = temp->next->node_num;
+        int next_id = -1;
+        if(temp->next != NULL) {
+            next_id = temp->next->node_num;
+        }
         printf("], next -> %d)\n", next_id);
         temp = temp->next;
     }
@@ -238,12 +257,7 @@ void freeGraph(ptrNode *head) {
     curr_n = *head;
     while (curr_n != NULL) {
         ptrNode next_node = curr_n->next;
-        ptrEdge curr_e = curr_n->edges;
-        while (curr_e != NULL) {
-            ptrEdge next_edge = curr_e->next;
-            free(curr_e);
-            curr_e = next_edge;
-        }
+        freeEdges(&curr_n);
         free(curr_n);
         curr_n = next_node;
     }
@@ -276,6 +290,7 @@ void addNode(ptrNode *head, int id){
     newNode->edges_s = 0;
     lastNode->next = newNode;
     lastNode = newNode;
+    (*head)->nodes_s++;
 }
 
 
@@ -292,12 +307,12 @@ ptrNode getNode(ptrNode head, int id){
 void removeEdge(ptrNode *node, int dest){
     ptrEdge edges = (*node)->edges;
     ptrEdge last = (*node)->edges;
-//    if((*node)->edges->endpoint->node_num == dest){
-//        (*node)->edges = edges->next;
-//        free(edges);
-//        (*node)->edges_s--;
-//        return;
-//    }
+    if((*node)->edges->endpoint->node_num == dest){
+        (*node)->edges = edges->next;
+        free(edges);
+        (*node)->edges_s--;
+        return;
+    }
     while(edges != NULL){
         if(edges->endpoint->node_num == dest){
             last->next = edges->next;
@@ -343,4 +358,138 @@ void removeNode(ptrNode *head, int id){
     freeEdges(&curr);
     remove_in_edges(head, id);
     free(curr);
+    (*head)->nodes_s++;
+}
+
+
+ptrQueue initQueue(ptrNode head, int src){
+    ptrQueue queue;
+    queue = (ptrQueue) malloc(sizeof(Queue));
+    if (queue == NULL) {
+        printf("Memory didn't allocated!\n");
+        exit(0);
+    }
+    queue->visited = 0;
+    queue->shortestDist =0;
+    queue->Vertex = getNode(head, src);
+    ptrNode curr;
+    ptrQueue last = NULL;
+    bool firstTime = false;
+    curr = head;
+    while(curr != NULL) {
+        if (curr->node_num != src) {
+            ptrQueue q = (ptrQueue) malloc(sizeof(Queue));
+            if (q == NULL) {
+                printf("Memory didn't allocated!\n");
+                exit(0);
+            }
+            q->visited = 0;
+            q->shortestDist = BIG_NUM;
+            q->Vertex = curr;
+            q->next = NULL;
+            if (!firstTime) {
+                queue->next = q;
+                last = q;
+                firstTime = true;
+            } else {
+                last->next = q;
+                last = q;
+            }
+        }
+        curr = curr->next;
+    }
+    return queue;
+}
+
+
+void sortQueue(ptrQueue *head){
+//Node q1 will point to head
+    ptrQueue q1 = *head, q2 = NULL;
+    int temp_dist;
+
+    if(*head == NULL) {
+        return;
+    }
+    else {
+        while(q1 != NULL) {
+            //Node q2 will point to node next to q1
+            q2 = q1->next;
+
+            while(q2 != NULL) {
+                //If q1 node's data is greater than q2's node data, swap the data between them
+                if(q1->shortestDist > q2->shortestDist) {
+                    temp_dist = q1->shortestDist;
+                    q1->shortestDist = q2->shortestDist;
+                    q2->shortestDist = temp_dist;
+                }
+                q2 = q2->next;
+            }
+            q1 = q1->next;
+        }
+    }
+}
+
+
+int cmp(const void *a, const void *b ){
+    const ptrQueue q1 = (const ptrQueue)a;
+    const ptrQueue q2 = (const ptrQueue)b;
+
+    if (q1->shortestDist > q2->shortestDist && q2->visited == 0)
+    {
+        return -1;
+    }
+    else if (q1->shortestDist <= q2->shortestDist && q1->visited == 0)
+    {
+        return 1;
+    }
+    return 1;
+}
+
+
+ptrQueue deQueue(ptrQueue *head){
+    ptrQueue last, newHead;
+    newHead = (*head)->next;
+    last = *head;
+    *head = newHead;
+    return newHead;
+    // NEED TO FREE QUEUE HEAD
+
+}
+
+
+int getShortestDist(ptrQueue head, int id){
+    ptrQueue curr = head;
+    while(curr->Vertex->node_num != id){
+        curr = curr->next;
+    }
+    return curr->shortestDist;
+}
+
+
+void setShortestDist(ptrQueue *head, int id, int dist){
+    ptrQueue curr = *head;
+    while(curr->Vertex->node_num != id){
+        curr = curr->next;
+    }
+    curr->shortestDist = dist;
+}
+
+
+int shortestPath(ptrQueue head, int src ,int dest, int q_size){
+    ptrQueue queue = head;
+    int size = q_size;
+    while(queue){
+        ptrQueue current = deQueue(&queue);
+        size--;
+        ptrEdge edges = current->Vertex->edges;
+        while(edges){
+            int new_dist = edges->weight + current->shortestDist;
+            int old_dist = getShortestDist(head, edges->endpoint->node_num);
+            if(new_dist < old_dist){
+                setShortestDist(&head, edges->endpoint->node_num, new_dist);
+            }
+            edges = edges->next;
+        }
+    }
+    return 0;
 }

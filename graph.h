@@ -13,9 +13,17 @@ typedef struct edge_ {
 typedef struct GRAPH {
     int node_num;
     int edges_s;
+    int nodes_s;
     ptrEdge edges;
     struct GRAPH *next;
 } Node, *ptrNode;
+
+typedef struct QUEUE {
+    ptrNode Vertex;
+    int shortestDist;
+    int visited;
+    struct QUEUE *next;
+}Queue, *ptrQueue;
 
 void build_graph_cmd(ptrNode *head);
 void insert_node_cmd(ptrNode *head);
