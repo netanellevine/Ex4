@@ -21,7 +21,8 @@ ptrQueue initQueue(ptrNode head, int src);
 void sortQueue(ptrQueue *head);
 int cmp(const void *a, const void *b);
 ptrQueue deQueue(ptrQueue *head);
-int shortestPath(ptrQueue head, int src ,int dest, int q_size);
+ptrQueue getQNode(ptrQueue head, int id);
+int shortestPath(ptrQueue head, int dest);
 int getShortestDist(ptrQueue head, int id);
 void setShortestDist(ptrQueue *head, int id, int dist);
 
@@ -32,7 +33,7 @@ int main() {
     char input;
     int DONE = 0;
     int amount_of_nodes = 0;
-    ptrNode ptrGraph;
+    ptrNode ptrGraph = NULL;
 //    ptrNode lastNode;
     while (DONE != EOF) {
         DONE = scanf("%c", &input);
@@ -121,8 +122,9 @@ int main() {
                 scanf("%d", &source);
                 scanf("%d", &dest);
                 ptrQueue queue = initQueue(ptrGraph, source);
-                qsort(&queue, ptrGraph->nodes_s, sizeof(Queue), cmp);
-
+                int ans = shortestPath(queue, dest);
+                printf("Shortest Path from %d to %d is: %d", source, dest, ans);
+                break;
             }
 //            case 'T':
 //            {
@@ -404,8 +406,7 @@ ptrQueue initQueue(ptrNode head, int src){
 
 void sortQueue(ptrQueue *head){
 //Node q1 will point to head
-    ptrQueue q1 = *head, q2 = NULL;
-    int temp_dist;
+    ptrQueue prev = NULL, q1 = *head, q2 = NULL;
 
     if(*head == NULL) {
         return;
@@ -418,12 +419,24 @@ void sortQueue(ptrQueue *head){
             while(q2 != NULL) {
                 //If q1 node's data is greater than q2's node data, swap the data between them
                 if(q1->shortestDist > q2->shortestDist) {
-                    temp_dist = q1->shortestDist;
-                    q1->shortestDist = q2->shortestDist;
-                    q2->shortestDist = temp_dist;
+                    ptrQueue temp;
+                    ptrQueue q2_next;
+                    q2_next = q2->next;
+                    temp = q1;
+                    q1 = q2;
+                    q2 = temp;
+                    q2->next = q2_next;
+                    q1->next = q2;
+                    if(prev != NULL) {
+                        prev->next = q1;
+                    }
+                    else{
+                        (*head) = q1;
+                    }
                 }
                 q2 = q2->next;
             }
+            prev = q1;
             q1 = q1->next;
         }
     }
@@ -451,9 +464,18 @@ ptrQueue deQueue(ptrQueue *head){
     newHead = (*head)->next;
     last = *head;
     *head = newHead;
-    return newHead;
+    return last;
     // NEED TO FREE QUEUE HEAD
 
+}
+
+
+ptrQueue getQNode(ptrQueue head, int id){
+    ptrQueue curr = head;
+    while(curr->Vertex->node_num != id){
+        curr = curr->next;
+    }
+    return curr;
 }
 
 
@@ -475,21 +497,24 @@ void setShortestDist(ptrQueue *head, int id, int dist){
 }
 
 
-int shortestPath(ptrQueue head, int src ,int dest, int q_size){
+int shortestPath(ptrQueue head, int dest){
     ptrQueue queue = head;
-    int size = q_size;
     while(queue){
         ptrQueue current = deQueue(&queue);
-        size--;
+        current->visited = 1;
         ptrEdge edges = current->Vertex->edges;
-        while(edges){
-            int new_dist = edges->weight + current->shortestDist;
-            int old_dist = getShortestDist(head, edges->endpoint->node_num);
-            if(new_dist < old_dist){
-                setShortestDist(&head, edges->endpoint->node_num, new_dist);
+        while(edges) {
+            ptrQueue adj = getQNode(head, edges->endpoint->node_num);
+            if (adj->visited == 0) {
+                int new_dist = edges->weight + current->shortestDist;
+                int old_dist = adj->shortestDist;
+                if (new_dist < old_dist) {
+                    adj->shortestDist = new_dist;
+                }
             }
-            edges = edges->next;
+                edges = edges->next;
         }
+        sortQueue(&queue);
     }
-    return 0;
+    return getQNode(head, dest)->shortestDist;
 }
