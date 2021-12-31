@@ -13,6 +13,9 @@ void addNode(ptrNode *head, int id);
 void initGraph(ptrNode *head, int size);
 ptrNode getNode(ptrNode head, int id);
 bool contains(ptrNode head, int id);
+void removeEdge(ptrNode *node, int dest);
+void remove_in_edges(ptrNode *head, int id);
+void removeNode(ptrNode *head, int id);
 
 ptrNode lastNode;
 
@@ -33,6 +36,7 @@ int main() {
                 break;
             }
             case 'n': {
+                // adding the node (the node id that was scanned before the 'n).
                 int src = -1;
                 int dest = -1;
                 int weight = -1;
@@ -55,16 +59,19 @@ int main() {
             case 'E': {
                 break;
             }
-            case 'B':
-            {
+            case 'B':{
+                // add new node, case this node already exist in the graph
+                // it will remove his old edges and will update to the new ones given.
                 int new_id;
+                ptrNode curr_n = NULL;
+                bool hasEdges = false;
                 scanf("%d", &new_id);
                 if(!contains(ptrGraph, new_id)){
                     addNode(&ptrGraph, new_id);
                 }
                 else{
-                    ptrNode curr_n = getNode(ptrGraph, new_id);
-                    freeEdges(&curr_n);
+                    hasEdges = true;
+                    curr_n = getNode(ptrGraph, new_id);
                 }
                 int dest = -1;
                 int weight = -1;
@@ -76,6 +83,9 @@ int main() {
                         weight = num;
                     }
                     if (new_id != -1 && dest != -1 && weight != -1) {
+                        if(hasEdges){
+                            freeEdges(&curr_n);
+                        }
                         addEdge(&ptrGraph, new_id, dest, weight);
                         dest = -1;
                         weight = -1;
@@ -83,10 +93,17 @@ int main() {
                 }
                 break;
             }
-//            case 'D':
-//            {
-//
-//            }
+            case 'D':{
+                int id;
+                scanf("%d", &id);
+                if(contains(ptrGraph, id)){
+                    removeNode(&ptrGraph, id);
+                }
+                break;
+            }
+            case 'P':{
+                printGraph_cmd(ptrGraph);
+            }
 //            case 'S':
 //            {
 //
@@ -182,23 +199,22 @@ void addEdge(ptrNode *head, int source, int dest, int weight) {
 
 
 void printGraph_cmd(ptrNode head) {
-    printf("[");
     ptrNode temp;
-    temp = head->next;
+    temp = head;
     while (temp != NULL) {
         int id = temp->node_num;
-        printf("(ID: %d,\n [", id);
+        printf("(ID: %d, [", id);
         ptrEdge e = temp->edges;
-        while (e->next != NULL) {
+        while (e != NULL) {
             int dest = e->endpoint->node_num;
             int weight = e->weight;
             printf("E(%d->%d,%d) ", id, dest, weight);
+            e = e->next;
         }
-        printf("],\n");
-        printf("next -> %d)", temp->next->node_num);
+        int next_id = temp->next->node_num;
+        printf("], next -> %d)\n", next_id);
         temp = temp->next;
     }
-    printf("]\n");
 }
 
 
@@ -270,4 +286,61 @@ ptrNode getNode(ptrNode head, int id){
         curr_n = curr_n->next;
     }
     return curr_n;
+}
+
+
+void removeEdge(ptrNode *node, int dest){
+    ptrEdge edges = (*node)->edges;
+    ptrEdge last = (*node)->edges;
+//    if((*node)->edges->endpoint->node_num == dest){
+//        (*node)->edges = edges->next;
+//        free(edges);
+//        (*node)->edges_s--;
+//        return;
+//    }
+    while(edges != NULL){
+        if(edges->endpoint->node_num == dest){
+            last->next = edges->next;
+            free(edges);
+            (*node)->edges_s--;
+            break;
+        }
+        last = edges;
+        edges = edges->next;
+    }
+}
+
+
+void remove_in_edges(ptrNode *head, int id){
+    ptrNode curr = *head;
+    while(curr != NULL){
+        ptrEdge edges = curr->edges;
+        while(edges != NULL){
+            if(edges->endpoint->node_num == id){
+                removeEdge(&curr, id);
+                break;
+            }
+            edges = edges->next;
+        }
+        curr = curr->next;
+    }
+}
+
+
+void removeNode(ptrNode *head, int id){
+    ptrNode curr = *head;
+    ptrNode last;
+    if(curr->node_num == id){
+        (*head) = curr->next;
+    }
+    else {
+        while (curr->node_num != id) {
+            last = curr;
+            curr = curr->next;
+        }
+        last->next = curr->next;
+    }
+    freeEdges(&curr);
+    remove_in_edges(head, id);
+    free(curr);
 }
