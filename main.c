@@ -7,6 +7,7 @@
 
 
 void freeGraph(ptrNode *head);
+void freeQueue(ptrQueue *head);
 void freeEdges(ptrNode *node);
 void printGraph_cmd(ptrNode head);
 void addEdge(ptrNode *head, int source, int dest, int weight);
@@ -22,7 +23,7 @@ void sortQueue(ptrQueue *head);
 int cmp(const void *a, const void *b);
 ptrQueue deQueue(ptrQueue *head);
 ptrQueue getQNode(ptrQueue head, int id);
-int shortestPath(ptrQueue head, int dest);
+int shortestPath(ptrNode head, int src, int dest);
 int getShortestDist(ptrQueue head, int id);
 void setShortestDist(ptrQueue *head, int id, int dist);
 
@@ -122,7 +123,7 @@ int main() {
                 scanf("%d", &source);
                 scanf("%d", &dest);
                 ptrQueue queue = initQueue(ptrGraph, source);
-                int ans = shortestPath(queue, dest);
+                int ans = shortestPath(ptrGraph, source, dest);
                 printf("Shortest Path from %d to %d is: %d", source, dest, ans);
                 break;
             }
@@ -257,11 +258,25 @@ void freeGraph(ptrNode *head) {
     }
     ptrNode curr_n;
     curr_n = *head;
-    while (curr_n != NULL) {
+    while (curr_n) {
         ptrNode next_node = curr_n->next;
         freeEdges(&curr_n);
         free(curr_n);
         curr_n = next_node;
+    }
+}
+
+
+void freeQueue(ptrQueue *head){
+    if (head == NULL) {
+        return;
+    }
+    ptrQueue curr_q;
+    curr_q = *head;
+    while (curr_q) {
+        ptrQueue next_q = curr_q->next;
+        free(curr_q);
+        curr_q = next_q;
     }
 }
 
@@ -497,14 +512,16 @@ void setShortestDist(ptrQueue *head, int id, int dist){
 }
 
 
-int shortestPath(ptrQueue head, int dest){
-    ptrQueue queue = head;
+int shortestPath(ptrNode head, int src, int dest){
+    ptrQueue queue, copyQueue;
+    copyQueue = initQueue(head, src);
+    queue = initQueue(head, src);
     while(queue){
         ptrQueue current = deQueue(&queue);
         current->visited = 1;
         ptrEdge edges = current->Vertex->edges;
         while(edges) {
-            ptrQueue adj = getQNode(head, edges->endpoint->node_num);
+            ptrQueue adj = getQNode(copyQueue, edges->endpoint->node_num);
             if (adj->visited == 0) {
                 int new_dist = edges->weight + current->shortestDist;
                 int old_dist = adj->shortestDist;
@@ -515,6 +532,12 @@ int shortestPath(ptrQueue head, int dest){
                 edges = edges->next;
         }
         sortQueue(&queue);
+        free(current);
     }
-    return getQNode(head, dest)->shortestDist;
+    int shortestPathWeight = getQNode(copyQueue, dest)->shortestDist;
+    if (shortestPathWeight == BIG_NUM){
+        shortestPathWeight = -1;
+    }
+    freeQueue(&copyQueue);
+    return shortestPathWeight;
 }
