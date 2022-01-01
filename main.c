@@ -23,11 +23,16 @@ void sortQueue(ptrQueue *head);
 int cmp(const void *a, const void *b);
 ptrQueue deQueue(ptrQueue *head);
 ptrQueue getQNode(ptrQueue head, int id);
-int shortestPath(ptrNode head, int src, int dest);
+int shortestPath(ptrQueue head, int dest);
 int getShortestDist(ptrQueue head, int id);
 void setShortestDist(ptrQueue *head, int id, int dist);
+int getAmountOfPermutaions(int num);
+void heappermute(ptrNode head,int v[], int n, int final_amount);
+void swap (int *x, char *y);
+void calculateTSP(ptrNode head, int *arr, int size);
 
 ptrNode lastNode;
+int shortestPathWeight = BIG_NUM;
 
 int main() {
     printf("START!\n");
@@ -123,14 +128,29 @@ int main() {
                 scanf("%d", &source);
                 scanf("%d", &dest);
                 ptrQueue queue = initQueue(ptrGraph, source);
-                int ans = shortestPath(ptrGraph, source, dest);
+                int ans = shortestPath(queue, dest);
+                freeQueue(&queue);
                 printf("Shortest Path from %d to %d is: %d", source, dest, ans);
                 break;
             }
-//            case 'T':
-//            {
-//
-//            }
+            case 'T':
+            {
+                int amount, num;
+                scanf("%d", &amount);
+                int *cities;
+                cities = (int*)malloc(sizeof(int) * amount);
+                for(int i = 0; i < amount; i++){
+                    scanf("%d", &num);
+                   *(cities + i) =  num;
+                }
+                heappermute(ptrGraph, cities, amount, amount);
+                printf("TSP is: %d\n", shortestPathWeight);
+                free(cities);
+                break;
+            }
+            default:{
+                break;
+            }
         }
     }
     freeGraph(&ptrGraph);
@@ -480,14 +500,15 @@ ptrQueue deQueue(ptrQueue *head){
     last = *head;
     *head = newHead;
     return last;
-    // NEED TO FREE QUEUE HEAD
-
 }
 
 
 ptrQueue getQNode(ptrQueue head, int id){
     ptrQueue curr = head;
-    while(curr->Vertex->node_num != id){
+    while(curr){
+        if(curr->Vertex->node_num == id) {
+            break;
+        }
         curr = curr->next;
     }
     return curr;
@@ -512,16 +533,15 @@ void setShortestDist(ptrQueue *head, int id, int dist){
 }
 
 
-int shortestPath(ptrNode head, int src, int dest){
-    ptrQueue queue, copyQueue;
-    copyQueue = initQueue(head, src);
-    queue = initQueue(head, src);
+int shortestPath(ptrQueue head, int dest){
+    ptrQueue queue;
+    queue = head;
     while(queue){
         ptrQueue current = deQueue(&queue);
         current->visited = 1;
         ptrEdge edges = current->Vertex->edges;
         while(edges) {
-            ptrQueue adj = getQNode(copyQueue, edges->endpoint->node_num);
+            ptrQueue adj = getQNode(head, edges->endpoint->node_num);
             if (adj->visited == 0) {
                 int new_dist = edges->weight + current->shortestDist;
                 int old_dist = adj->shortestDist;
@@ -532,12 +552,59 @@ int shortestPath(ptrNode head, int src, int dest){
                 edges = edges->next;
         }
         sortQueue(&queue);
-        free(current);
     }
-    int shortestPathWeight = getQNode(copyQueue, dest)->shortestDist;
+    int shortestPathWeight = getQNode(head, dest)->shortestDist;
     if (shortestPathWeight == BIG_NUM){
         shortestPathWeight = -1;
     }
-    freeQueue(&copyQueue);
     return shortestPathWeight;
+}
+
+int getAmountOfPermutaions(int num){
+    int p = 1;
+    for(int i = 1; i <= num; i++){
+        p = p*i;
+    }
+    return p;
+}
+
+void swap (int *x, char *y){
+    int temp;
+    temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+void heappermute(ptrNode head, int v[], int n, int final_amount) {
+    int i;
+    if (n == 1) {
+        calculateTSP(head, v, final_amount);
+    }
+    else {
+        for (i = 0; i < n; i++) {
+            heappermute(head ,v, n-1, final_amount);
+            if (n % 2 == 1) {
+                swap(&v[0], &v[n-1]);
+            }
+            else {
+                swap(&v[i], &v[n-1]);
+            }
+        }
+    }
+}
+
+void calculateTSP(ptrNode head, int *arr, int size){
+    int i = 0, j = 1, currentMinDist = 0, src, dest;
+    while(j < size){
+        src = *(arr + i);
+        dest = *(arr + j);
+        ptrQueue queue = initQueue(head, src);
+        currentMinDist += shortestPath(queue, dest);
+        freeQueue(&queue);
+        i++;
+        j++;
+    }
+    if(currentMinDist < shortestPathWeight){
+        shortestPathWeight = currentMinDist;
+    }
 }
