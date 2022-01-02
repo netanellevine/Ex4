@@ -18,19 +18,17 @@ typedef struct GRAPH {
     struct GRAPH *next;
 } Node, *ptrNode;
 
-typedef struct QUEUE {
-    ptrNode Vertex;
-    int shortestDist;
-    int visited;
-    struct QUEUE *next;
-}Queue, *ptrQueue;
 
-void build_graph_cmd(ptrNode *head);
-void insert_node_cmd(ptrNode *head);
-void delete_node_cmd(ptrNode *head);
-void printGraph_cmd(ptrNode head); //for self debug
-void deleteGraph_cmd(ptrNode* head);
-void shortsPath_cmd(ptrNode head);
-void TSP_cmd(ptrNode head);
+void printGraph_cmd(ptrNode head);
+void freeGraph(ptrNode *head);
+void freeEdges(ptrNode *node);
+void initGraph(ptrNode *head, int size);
+void addEdge(ptrNode *head, int source, int dest, int weight);
+void addNode(ptrNode *head, int id);
+ptrNode getNode(ptrNode head, int id);
+bool contains(ptrNode head, int id);
+void removeEdge(ptrNode *node, int dest);
+void remove_in_edges(ptrNode *head, int id);
+void removeNode(ptrNode *head, int id);
 
 #endif
