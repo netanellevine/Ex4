@@ -112,7 +112,7 @@ void printGraph_cmd(ptrNode head) {
 }
 
 
-bool contains(ptrNode head, int id){
+int contains(ptrNode head, int id){
     ptrNode curr_n = head;
     while(curr_n != NULL){
         if(curr_n->node_num == id){

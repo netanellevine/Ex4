@@ -26,7 +26,7 @@ ptrQueue initQueue(ptrNode head, int src){
     queue->Vertex = getNode(head, src);
     ptrNode curr;
     ptrQueue last = NULL;
-    bool firstTime = false;
+    int firstTime = false;
     curr = head;
     while(curr) {
         if (curr->node_num != src) {

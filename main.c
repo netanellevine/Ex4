@@ -56,7 +56,7 @@ int main() {
                 // it will remove his old edges and will update to the new ones given.
                 int new_id;
                 ptrNode curr_n = NULL;
-                bool hasEdges = false;
+                int hasEdges = false;
                 int count_new_edges = 0;
                 scanf("%d", &new_id);
                 if(!contains(ptrGraph, new_id)){
