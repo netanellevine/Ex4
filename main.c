@@ -111,7 +111,7 @@ int main() {
                     ans = -1;
                 }
                 freeQueue(&queue);
-                printf("Shortest Path from %d to %d is: %d", source, dest, ans);
+                printf("Dijsktra shortest path: %d \n", ans);
                 break;
             }
             case 'T':
