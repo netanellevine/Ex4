@@ -14,6 +14,7 @@ void sortQueue(ptrQueue *head);
 ptrQueue deQueue(ptrQueue *head);
 ptrQueue getFirstUnvisited(ptrQueue head);
 ptrQueue getQNode(ptrQueue head, int id);
+ptrQueue getQNodeByInd(ptrQueue head, int ind);
 int shortestPath(ptrQueue head, int dest);
 int getAmountOfPermutaions(int num);
 void heapPermuteTSP(ptrNode head,int cities_to_visit[], int size, int original_size);

@@ -67,7 +67,7 @@ void addEdge(ptrNode *head, int source, int dest, int weight) {
         curr_n->edges = e;
     } else {
         ptrEdge curr_e = curr_n->edges;
-        while (curr_e->next != NULL) {
+        while (curr_e != NULL && curr_e->next != NULL) {
             curr_e = curr_e->next;
         }
         ptrEdge newEdge;
@@ -140,7 +140,7 @@ void freeEdges(ptrNode *node) {
         return;
     }
     ptrEdge curr_e = (*node)->edges;
-    while (curr_e != NULL) {
+    while (curr_e) {
         ptrEdge next_edge = curr_e->next;
         free(curr_e);
         curr_e = next_edge;

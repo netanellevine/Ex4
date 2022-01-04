@@ -13,7 +13,6 @@ typedef struct edge_ {
 typedef struct GRAPH {
     int node_num;
     int edges_s;
-    int nodes_s;
     ptrEdge edges;
     struct GRAPH *next;
 } Node, *ptrNode;

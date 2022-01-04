@@ -9,7 +9,9 @@
 
 
 extern int shortestPathWeight;
-extern int graphSize;
+
+
+
 ptrQueue initQueue(ptrNode head, int src){
     ptrQueue queue;
     queue = (ptrQueue) malloc(sizeof(Queue));
@@ -50,40 +52,36 @@ ptrQueue initQueue(ptrNode head, int src){
 }
 
 
-void sortQueue(ptrQueue *head){
-//Node q1 will point to head
-    ptrQueue prev = NULL, q1 = *head, q2 = NULL;
-
-    if(*head == NULL) {
-        return;
+int Qsize(ptrQueue head){
+    ptrQueue curr = head;
+    int size = 0;
+    while(curr){
+        size++;
+        curr = curr->next;
     }
-    else {
-        while(q1 != NULL) {
-            //Node q2 will point to node next to q1
-            q2 = q1->next;
+    return size;
+}
 
-            while(q2 != NULL) {
-                //If q1 node's data is greater than q2's node data, swap the data between them
-                if(q1->shortestDist > q2->shortestDist && q2->visited == 0) {
-                    ptrQueue temp;
-                    ptrQueue q2_next;
-                    q2_next = q2->next;
-                    temp = q1;
-                    q1 = q2;
-                    q2 = temp;
-                    q2->next = q2_next;
-                    q1->next = q2;
-                    if(prev != NULL) {
-                        prev->next = q1;
-                    }
-                    else{
-                        (*head) = q1;
-                    }
-                }
-                q2 = q2->next;
+
+void bubbleSort(ptrQueue *head){
+    ptrQueue curr = *head, q1, q2;
+    int size = Qsize((ptrQueue) head);
+    for(int i = 1; i < size - 1; i++){
+        ptrQueue prev = curr;
+        for(int j = 1; j < size - i - 1 ; j++){
+            q1 = getQNodeByInd(curr, j);
+            q2 = q1->next;
+            if(q1->shortestDist > q2->shortestDist){
+                ptrQueue q2_next = q2->next;
+                ptrQueue temp;
+                temp = q1;
+                q1 = q2;
+                q2 = temp;
+                q1->next = q2;
+                q2->next = q2_next;
+                prev->next = q1;
             }
             prev = q1;
-            q1 = q1->next;
         }
     }
 }
@@ -120,12 +118,24 @@ ptrQueue getQNode(ptrQueue head, int id){
 }
 
 
+ptrQueue getQNodeByInd(ptrQueue head, int ind){
+    ptrQueue curr;
+    curr = head->next;
+    int i = 1;
+    while(i != ind){
+        i++;
+        curr = curr->next;
+    }
+    return curr;
+}
+
+
 int shortestPath(ptrQueue head, int dest){
     ptrQueue queue;
+    int size = Qsize(head);
     queue = head;
     int visited = 0;
-    int *distArray = NULL;
-    while(visited < graphSize){
+    while(visited < size){
         ptrQueue current = getFirstUnvisited(queue);
         current->visited = 1;
         visited++;
@@ -141,13 +151,14 @@ int shortestPath(ptrQueue head, int dest){
             }
             edges = edges->next;
         }
-        sortQueue(&queue);
+        bubbleSort(&queue);
+//        sortQueue(&queue);
     }
-    shortestPathWeight = getQNode(head, dest)->shortestDist;
-    if (shortestPathWeight == BIG_NUM){
-        shortestPathWeight = -1;
-    }
-    return shortestPathWeight;
+    int minDist = getQNode(head, dest)->shortestDist;
+//    if (minDist == BIG_NUM){
+//        return -1;
+//    }
+    return minDist;
 }
 
 
@@ -177,6 +188,7 @@ void heapPermuteTSP(ptrNode head, int cities_to_visit[], int size, int original_
     }
 }
 
+
 void freeQueue(ptrQueue *head){
     if (head == NULL) {
         return;
@@ -190,13 +202,19 @@ void freeQueue(ptrQueue *head){
     }
 }
 
+
 void calculateTSP(ptrNode head, int *arr, int size){
-    int i = 0, j = 1, currentMinDist = 0, src, dest;
+    int i = 0, j = 1, currentMinDist = 0, currDist, src, dest;
     while(j < size){
         src = *(arr + i);
         dest = *(arr + j);
         ptrQueue queue = initQueue(head, src);
-        currentMinDist += shortestPath(queue, dest);
+        currDist = shortestPath(queue, dest);
+        if(currDist == BIG_NUM){
+            currentMinDist = BIG_NUM;
+            break;
+        }
+        currentMinDist += currDist;
         freeQueue(&queue);
         i++;
         j++;
