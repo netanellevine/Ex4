@@ -6,13 +6,13 @@ all: graph
 graph: main.o graph.o queue.o
 		$(CC) $(FLAGS) -o graph main.o graph.o queue.o
 
-main.o: main.c graph.h Queue.h
+main.o: main.c MyGraph.h MyQueue.h
 		$(CC) $(FLAGS) -c main.c
 
-graph.o: graph.c graph.h
+graph.o: MyGraph.c MyGraph.h
 		$(CC) $(FLAGS) -c graph.c
 
-queue.o: Queue.c Queue.h graph.h
+queue.o: MyQueue.c MyQueue.h MyGraph.h
 		$(CC) $(FLAGS) -c Queue.c
 
 

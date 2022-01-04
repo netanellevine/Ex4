@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "graph.h"
+#include "MyGraph.h"
 
  extern int graphSize;
 extern ptrNode lastNode;

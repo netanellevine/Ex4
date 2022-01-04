@@ -1,6 +1,6 @@
 #ifndef EX4_QUEUE_H
 #define EX4_QUEUE_H
-#include "graph.h"
+#include "MyGraph.h"
 
 typedef struct QUEUE {
     ptrNode Vertex;

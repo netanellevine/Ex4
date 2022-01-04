@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include "graph.h"
-#include "Queue.h"
+#include "MyGraph.h"
+#include "MyQueue.h"
 
 #define BIG_NUM 99999999
 
