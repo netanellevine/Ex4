@@ -11,7 +11,7 @@ int graphSize;
 int shortestPathWeight = BIG_NUM;
 
 int main() {
-    printf("START!\n");
+    //printf("START!\n");
     char input;
     int DONE = 0;
     int amount_of_nodes = 0;
@@ -97,10 +97,10 @@ int main() {
                 }
                 break;
             }
-            case 'P':{
-                printGraph_cmd(ptrGraph);
-                break;
-            }
+//             case 'P':{
+//                 printGraph_cmd(ptrGraph);
+//                 break;
+//             }
             case 'S':{
                 int source, dest;
                 scanf("%d", &source);
@@ -137,9 +137,9 @@ int main() {
                 free(cities);
                 break;
             }
-            case 'E': {
-                exit(0);
-            }
+//             case 'E': {
+//                 exit(0);
+//             }
             default:{
                 break;
             }
