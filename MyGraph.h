@@ -25,7 +25,7 @@ void initGraph(ptrNode *head, int size);
 void addEdge(ptrNode *head, int source, int dest, int weight);
 void addNode(ptrNode *head, int id);
 ptrNode getNode(ptrNode head, int id);
-bool contains(ptrNode head, int id);
+int contains(ptrNode head, int id);
 void removeEdge(ptrNode *node, int dest);
 void remove_in_edges(ptrNode *head, int id);
 void removeNode(ptrNode *head, int id);
