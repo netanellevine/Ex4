@@ -3,17 +3,17 @@ FLAGS= -Wall -g
 
 all: graph
 
-graph: main.o graph.o queue.o
-		$(CC) $(FLAGS) -o graph main.o graph.o queue.o
+graph: main.o MyGraph.o MyQueue.o
+		$(CC) $(FLAGS) -o graph main.o MyGraph.o MyQueue.o
 
 main.o: main.c MyGraph.h MyQueue.h
 		$(CC) $(FLAGS) -c main.c
 
-graph.o: MyGraph.c MyGraph.h
-		$(CC) $(FLAGS) -c graph.c
+MyGraph.o: MyGraph.c MyGraph.h
+		$(CC) $(FLAGS) -c MyGraph.c
 
-queue.o: MyQueue.c MyQueue.h MyGraph.h
-		$(CC) $(FLAGS) -c Queue.c
+MyQueue.o: MyQueue.c MyQueue.h MyGraph.h
+		$(CC) $(FLAGS) -c MyQueue.c
 
 
 .PHONY: clean all
