@@ -15,7 +15,7 @@ extern int shortestPathWeight;
 ptrQueue initQueue(ptrNode head, int src){
     ptrQueue queue;
     queue = (ptrQueue) malloc(sizeof(Queue));
-    if (queue == NULL) {
+    if (!queue) {
         printf("Memory didn't allocated!\n");
         exit(0);
     }
@@ -26,10 +26,11 @@ ptrQueue initQueue(ptrNode head, int src){
     ptrQueue last = NULL;
     bool firstTime = false;
     curr = head;
-    while(curr != NULL) {
+    while(curr) {
         if (curr->node_num != src) {
             ptrQueue q = (ptrQueue) malloc(sizeof(Queue));
-            if (q == NULL) {
+            if (!q) {
+                free(queue);
                 printf("Memory didn't allocated!\n");
                 exit(0);
             }
@@ -212,6 +213,7 @@ void calculateTSP(ptrNode head, int *arr, int size){
         currDist = shortestPath(queue, dest);
         if(currDist == BIG_NUM){
             currentMinDist = BIG_NUM;
+            freeQueue(&queue);
             break;
         }
         currentMinDist += currDist;

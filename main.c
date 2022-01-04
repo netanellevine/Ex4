@@ -120,7 +120,7 @@ int main() {
                 scanf("%d", &amount_of_cities);
                 int *cities;
                 cities = (int*)malloc(sizeof(int) * amount_of_cities);
-                if(cities == NULL){
+                if(!cities){
                     printf("Memory didn't allocated!\n");
                     exit(0);
                 }
