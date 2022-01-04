@@ -1,5 +1,4 @@
 CC=gcc
-AR=ar
 FLAGS= -Wall -g
 
 all: graph
@@ -17,7 +16,7 @@ queue.o: Queue.c Queue.h graph.h
 		$(CC) $(FLAGS) -c Queue.c
 
 
-.PHONY: clean
+.PHONY: clean all
 #make clean
 clean:
 	rm -f *.o graph
