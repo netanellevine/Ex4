@@ -1,5 +1,3 @@
-#ifndef EX4_QUEUE_H
-#define EX4_QUEUE_H
 #include "MyGraph.h"
 
 typedef struct QUEUE {
@@ -22,4 +20,4 @@ void swap (int *x, int *y);
 void calculateTSP(ptrNode head, int *arr, int size);
 void freeQueue(ptrQueue *head);
 
-#endif //EX4_QUEUE_H
+

@@ -1,5 +1,4 @@
-#ifndef GRAPH_
-#define GRAPH_
+
 
 typedef struct GRAPH *ptrNode;
 
@@ -30,4 +29,4 @@ void removeEdge(ptrNode *node, int dest);
 void remove_in_edges(ptrNode *head, int id);
 void removeNode(ptrNode *head, int id);
 
-#endif
+
