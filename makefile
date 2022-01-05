@@ -3,16 +3,17 @@ FLAGS= -Wall -g
 
 all: graph
 
-graph: main.o MyGraph.o MyQueue.o
-		$(CC) $(FLAGS) -o graph main.o MyGraph.o MyQueue.o
+graph: main.o MyGraph.o MyQueue.o lib_MyGraph.a
+		$(CC) $(FLAGS) -o graph main.o -L . -lname
 
-main.o: main.c MyGraph.h MyQueue.h
+main.o: main.c
 		$(CC) $(FLAGS) -c main.c
-
-MyGraph.o: MyGraph.c MyGraph.h
+lib_MyGraph.a: MyGraph.o MyQueue.o
+		ar rcs lib_MyGraph.a MyGraph.o MyQueue.o
+MyGraph.o: MyGraph.c
 		$(CC) $(FLAGS) -c MyGraph.c
 
-MyQueue.o: MyQueue.c MyQueue.h MyGraph.h
+MyQueue.o: MyQueue.c
 		$(CC) $(FLAGS) -c MyQueue.c
 
 
