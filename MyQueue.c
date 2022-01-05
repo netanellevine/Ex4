@@ -260,7 +260,7 @@ void heapPermuteTSP(ptrNode head, int cities_to_visit[], int size, int original_
 
 
 /**
- * free the memory allocated to the queue.
+ * this method frees the memory allocated to the queue.
  * @param head pointer to the head of the queue
  */
 void freeQueue(ptrQueue *head){

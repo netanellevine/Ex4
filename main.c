@@ -20,7 +20,7 @@ int main() {
     while (DONE != EOF) {
         DONE = scanf("%c", &input);
         switch (input) {
-            case 'A': {
+            case 'A': { // build a new graph, case a graph is already existed delete the old and create a new one.
                 if(ptrGraph != NULL){
                     freeGraph(&ptrGraph);
                 }
@@ -30,18 +30,20 @@ int main() {
                 break;
             }
             case 'n': {
-                // adding the node (the node id that was scanned before the 'n).
-                int src = -1;
+                // adding an edges to a specific node.
+                int src = -1; // the node that the new edges will start from
                 int dest = -1;
                 int weight = -1;
                 int num = -1;
                 scanf("%d", &src);
+                // scan two numbers first one for dest second one for weight
                 while (scanf("%d", &num)) {
                     if (src != -1 && dest == -1 && weight == -1) {
                         dest = num;
                     } else if (src != -1 && dest != -1 && weight == -1) {
                         weight = num;
                     }
+                    // after scanned two numbers we have all the data we need to create a new edge.
                      if (src != -1 && dest != -1 && weight != -1) {
                         addEdge(&ptrGraph, src, dest, weight);
                         dest = -1;
@@ -89,7 +91,7 @@ int main() {
                 }
                 break;
             }
-            case 'D':{
+            case 'D':{ // removes a node from the graph
                 int id;
                 scanf("%d", &id);
                 if(contains(ptrGraph, id)){
@@ -102,7 +104,7 @@ int main() {
 //                 printGraph_cmd(ptrGraph);
 //                 break;
 //             }
-            case 'S':{
+            case 'S':{ // shortest path between two nodes
                 int source, dest;
                 scanf("%d", &source);
                 scanf("%d", &dest);
@@ -115,7 +117,7 @@ int main() {
                 printf("Dijsktra shortest path: %d \n", ans);
                 break;
             }
-            case 'T':
+            case 'T': // shortest path between multiple nodes.
             {
                 int amount_of_cities, num;
                 scanf("%d", &amount_of_cities);
