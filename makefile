@@ -11,6 +11,7 @@ main.o: main.c
 
 lib_MyGraph.a: MyGraph.o MyQueue.o
 		ar rcs lib_MyGraph.a MyGraph.o MyQueue.o
+
 MyGraph.o: MyGraph.c
 		$(CC) $(FLAGS) -c MyGraph.c
 
@@ -20,5 +21,6 @@ MyQueue.o: MyQueue.c
 
 .PHONY: clean all
 #make clean
+
 clean:
 	rm -f *.o *.a graph

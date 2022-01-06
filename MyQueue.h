@@ -1,5 +1,4 @@
 
-
 typedef struct QUEUE {
     ptrNode Vertex;
     int shortestDist;

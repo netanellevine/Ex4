@@ -1,5 +1,4 @@
 
-
 typedef struct GRAPH *ptrNode;
 
 typedef struct edge_ {

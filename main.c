@@ -100,7 +100,7 @@ int main() {
                 }
                 break;
             }
-//             case 'P':{
+//             case 'P':{ // for me
 //                 printGraph_cmd(ptrGraph);
 //                 break;
 //             }
@@ -140,7 +140,7 @@ int main() {
                 free(cities);
                 break;
             }
-//             case 'E': {
+//             case 'E': { // for me
 //                 exit(0);
 //             }
             default:{

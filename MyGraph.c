@@ -227,6 +227,7 @@ ptrNode getNode(ptrNode head, int id){
     return curr_n;
 }
 
+
 /**
  * this method removes the edge between the @node given to the node with id = @dest.
  * @param node pointer to the node which this method will work on.
@@ -274,6 +275,7 @@ void remove_in_edges(ptrNode *head, int id){
         curr = curr->next;
     }
 }
+
 
 /**
  * this method removes a node with id number matching to @id
